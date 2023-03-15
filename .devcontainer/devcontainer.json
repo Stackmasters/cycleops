@@ -1,9 +1,11 @@
 {
   "name": "Cycleops CLI",
-  "build": {
-    "context": "..",
-    "dockerfile": "../Dockerfile"
-  },
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "cycleops-cli",
+  "workspaceFolder": "/usr/src/app",
+  "postCreateCommand": "poetry install",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {
       "ppa": true,
@@ -27,7 +29,7 @@
           "--profile",
           "black"
         ],
-        "python.formatting.provider": "none",
+        "python.formatting.provider": "black",
         "[python]": {
           "editor.defaultFormatter": "ms-python.black-formatter",
           "editor.formatOnSave": true,
