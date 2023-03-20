@@ -1,0 +1,45 @@
+{
+  "name": "Cycleops CLI",
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "cycleops-cli",
+  "workspaceFolder": "/usr/src/app",
+  "postCreateCommand": "poetry install",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "os-provided"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "editorconfig.editorconfig",
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.python",
+        "ms-python.vscode-pylance"
+      ],
+      "settings": {
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnSaveMode": "modifications",
+        "isort.args": [
+          "--profile",
+          "black"
+        ],
+        "python.formatting.provider": "black",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter",
+          "editor.formatOnSave": true,
+          "editor.formatOnSaveMode": "modifications",
+          "editor.formatOnPaste": true,
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+          }
+        }
+      }
+    }
+  }
+}
