@@ -9,8 +9,6 @@ from .auth import CycleopsAuthentication
 from .exceptions import APIError, AuthenticationError
 from .utils import extract_error_message
 
-app = typer.Typer()
-
 
 class Client:
     """
@@ -56,18 +54,6 @@ class Client:
         except Exception as error:
             typer.echo(error)
             raise typer.Abort()
-
-    @staticmethod
-    @app.command()
-    def config(base_url: Optional[str] = None, api_key: Optional[str] = None) -> None:
-        """
-        Configure Client options
-        """
-        if base_url:
-            Client.base_url: str = base_url
-
-        if api_key:
-            Client.api_key: str = api_key
 
 
 class SubClient:

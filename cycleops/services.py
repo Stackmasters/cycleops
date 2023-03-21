@@ -11,12 +11,12 @@ service_client: ServiceClient = ServiceClient(cycleops_client)
 
 @app.command()
 def update(
-    service_id: int,
+    service_id: int = typer.Argument(..., help="The id of the service."),
     variables: Optional[List[str]] = typer.Option(
         None,
         "--variable",
         "-v",
-        help="Variable key-value pairs (e.g. container.image=nginx:1.23)",
+        help="Variable key-value pairs (e.g. container.image=nginx:1.23).",
     ),
 ) -> None:
     """
@@ -51,7 +51,7 @@ def update(
 
 def validate_variable_format(variable: str) -> Tuple[str, str]:
     """
-    Validate the format of a variable and return the key-value pair.
+    Validates the format of a variable and returns the key-value pair.
     """
 
     if "=" not in variable:

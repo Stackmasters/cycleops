@@ -4,7 +4,7 @@ from requests.models import PreparedRequest
 
 class CycleopsAuthentication(AuthBase):
     """
-    Authentication handler for Cycleops API
+    Authentication handler for Cycleops API.
     """
 
     def __init__(self, api_key: str):

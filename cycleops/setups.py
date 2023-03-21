@@ -8,9 +8,9 @@ setup_client: SetupClient = SetupClient(cycleops_client)
 
 
 @app.command()
-def deploy(setup_id: int) -> None:
+def deploy(setup_id: int = typer.Argument(..., help="The id of the setup.")) -> None:
     """
-    Create a deployment job for the specified setup_id.
+    Deploy the setup with the specified setup_id.
     """
 
     setup_client.deploy(setup_id)
