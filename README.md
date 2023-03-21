@@ -56,6 +56,21 @@ services update <service_id> --variable <key_1>=<value_1> --variable <key_2>=<va
 setups deploy <setup_id>
 ```
 
+### GitHub Actions
+
+You can use Cycleops with your GitHub Actions to deploy a setup right from GitHub. For example this is how you could update the Docker image of a service and deploy a setup:
+
+```yml
+ deploy:
+    runs-on: ubuntu-latest
+    env:
+      CYCLEOPS_API_KEY: ${{ secrets.CYCLEOPS_API_KEY }}
+    steps:
+        run: pipx install cycleops
+        run: cycleops services update <service_id> --variable container.image=<image_name>
+        run: cycleops setups deploy <setup_id>
+```
+
 ## Example
 
 You can update a service's image and deploy a setup as follows:
