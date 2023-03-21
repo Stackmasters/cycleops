@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  cycleops-cli:
+  cycleops:
     build: .
     environment:
       CYCLEOPS_BASE_URL: ${CYCLEOPS_BASE_URL}
@@ -9,5 +9,5 @@ services:
     volumes:
       - .:/usr/src/app
     network_mode: host
-    image: cycleops-cli:latest
+    image: cycleops:latest
     command: sleep infinity

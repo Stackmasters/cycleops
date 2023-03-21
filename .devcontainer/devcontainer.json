@@ -3,7 +3,7 @@
   "dockerComposeFile": [
     "../docker-compose.yml"
   ],
-  "service": "cycleops-cli",
+  "service": "cycleops",
   "workspaceFolder": "/usr/src/app",
   "postCreateCommand": "poetry install",
   "features": {

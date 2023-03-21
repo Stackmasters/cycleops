@@ -3,7 +3,7 @@ from requests.models import Response
 
 class Error(Exception):
     """
-    Base class for all API errors
+    Base class for all API errors.
     """
 
     def __init__(self, message: str, response: Response):
