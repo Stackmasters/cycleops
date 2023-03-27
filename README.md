@@ -45,7 +45,7 @@ cycleops --api-key=<cycleops_api_key> services update <service_id> --variable <k
 #### Update a service
 
 ```
-services update <service_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ...  --variable <key_n>=<value_n>
+cycleops services update <service_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ...  --variable <key_n>=<value_n>
 ```
 
 ### Setups
@@ -53,7 +53,7 @@ services update <service_id> --variable <key_1>=<value_1> --variable <key_2>=<va
 #### Deploy a setup
 
 ```
-setups deploy <setup_id>
+cycleops setups deploy <setup_id>
 ```
 
 ### GitHub Actions
