@@ -5,11 +5,15 @@ import typer
 from .client import cycleops_client
 from .services import app as services_app
 from .setups import app as setups_app
+from .stacks import app as stacks_app
+from .units import app as units_app
 
 cycleops = typer.Typer(pretty_exceptions_show_locals=False)
 
 cycleops.add_typer(services_app, name="services", help="Manage your services.")
+cycleops.add_typer(stacks_app, name="stacks", help="Manage your stacks.")
 cycleops.add_typer(setups_app, name="setups", help="Manage your setups.")
+cycleops.add_typer(units_app, name="units", help="List all of the available units.")
 
 
 @cycleops.callback()

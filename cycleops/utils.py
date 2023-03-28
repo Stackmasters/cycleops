@@ -1,6 +1,7 @@
 import json
 
 from requests.models import Response
+from rich import print
 
 
 def extract_error_message(response: Response) -> str:
@@ -26,3 +27,11 @@ def extract_error_message(response: Response) -> str:
         return response.text.strip()
 
     return ""
+
+
+def display_error_message(error):
+    print(f"[bold red]{error}[/bold red]")
+
+
+def display_success_message(message):
+    print(f"[bold green]{message}[/bold green]")
