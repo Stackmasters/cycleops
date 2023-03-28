@@ -40,15 +40,109 @@ cycleops --api-key=<cycleops_api_key> services update <service_id> --variable <k
 
 *Note: If both the environment variable and command line option are set, the command line option will be used by default.*
 
+### Units
+
+#### List of all of the available units
+
+```
+cycleops units list
+```
+
 ### Services
+
+#### List your services
+
+```
+cycleops services list
+```
+
+#### Retrieve a service
+
+```
+cycleops services retrieve <service_id>
+```
+
+#### Create a service
+
+```
+cycleops services create --name <service_name> --unit-id <unit_id>
+```
 
 #### Update a service
 
 ```
-cycleops services update <service_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ...  --variable <key_n>=<value_n>
+cycleops services update <service_id> --name <service_name> --description <service_description --unit-id <unit_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ... --variable <key_n>=<value_n>
+```
+
+#### Delete a service
+
+```
+cycleops services delete <service_id>
+```
+
+### Stacks
+
+#### List your stacks
+
+```
+cycleops stacks list
+```
+
+#### Retrieve a stack
+
+```
+cycleops stacks retrieve <stack_id>
+```
+
+#### Create a stack
+
+```
+cycleops stacks create --name <stack_name>
+```
+
+#### Update a stack
+
+```
+cycleops stacks update <stack_id> --name <stack_name> --description <stack_description> --unit-id <unit_id> ... --unit-id <unit_id>
+```
+
+#### Delete a stack
+
+```
+cycleops stacks delete <stack_id>
 ```
 
 ### Setups
+
+#### List your setups
+
+```
+cycleops setups list
+```
+
+#### Retrieve a setup
+
+```
+cycleops setups retrieve <setup_id>
+```
+
+#### Create a setup
+
+```
+cycleops setups create --name <setup_name>
+```
+
+#### Update a setup
+
+```
+cycleops setups update <setup_id> --name <setup_name> --stack-id <stack_id> --environment-id <environment_id> --host-id <host_id> ... --host-id <host_id> --hostgroup-id <hostgroup_id> ... --hostgroup-id <hostgroup_id> --service-id <service_id> ... --service-id <service_id>
+```
+
+#### Delete a setup
+
+```
+cycleops setups delete <setup_id>
+```
 
 #### Deploy a setup
 

@@ -28,3 +28,15 @@ class APIError(Error):
     """
 
     pass
+
+
+class NotFound(Exception):
+    """
+    Raised when the requested resource is falsy.
+    """
+
+    def __init__(self, message: str):
+        self.message = message
+
+    def __str__(self) -> str:
+        return f"Error: {self.message}"
