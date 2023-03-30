@@ -78,7 +78,7 @@ def create(
             units=units,
         )
 
-        display_success_message(f"Stack {name} has been queued for creation")
+        display_success_message(f"Stack {name} has been created")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -113,7 +113,7 @@ def update(
             units=units,
         )
 
-        display_success_message(f"Stack {stack_id} has been queued for update")
+        display_success_message(f"Stack {stack_id} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -129,7 +129,7 @@ def delete(
 
     try:
         stack_client.delete(stack_id)
-        display_success_message(f"Stack {stack_id} has been queued for deletion")
+        display_success_message(f"Stack {stack_id} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()

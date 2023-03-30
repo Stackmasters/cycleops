@@ -79,7 +79,7 @@ def create(
             variables=variables,
         )
 
-        display_success_message(f"Service {name} has been queued for creation")
+        display_success_message(f"Service {name} has been created")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -127,7 +127,7 @@ def update(
             variables=variables,
         )
 
-        display_success_message(f"Service {service_id} has been queued for update")
+        display_success_message(f"Service {service_id} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -143,7 +143,7 @@ def delete(
 
     try:
         service_client.delete(service_id)
-        display_success_message(f"Service {service_id} has been queued for deletion")
+        display_success_message(f"Service {service_id} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()

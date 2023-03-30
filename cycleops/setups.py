@@ -88,7 +88,7 @@ def create(
             services=services,
         )
 
-        display_success_message(f"Setup {name} has been queued for creation")
+        display_success_message(f"Setup {name} has been created")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -134,7 +134,7 @@ def update(
             services=services,
         )
 
-        display_success_message(f"Setup {setup_id} has been queued for update")
+        display_success_message(f"Setup {setup_id} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -150,7 +150,7 @@ def delete(
 
     try:
         setup_client.delete(setup_id)
-        display_success_message(f"Setup {setup_id} has been queued for deletion")
+        display_success_message(f"Setup {setup_id} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
