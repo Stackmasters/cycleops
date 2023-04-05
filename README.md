@@ -161,7 +161,7 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
       CYCLEOPS_API_KEY: ${{ secrets.CYCLEOPS_API_KEY }}
     steps:
         run: pipx install cycleops
-        run: cycleops services update <service_id> --variable container.image=<image_name>
+        run: cycleops services update <service_id> --variable containers.0.image=<image_name>
         run: cycleops setups deploy <setup_id>
 ```
 
@@ -170,7 +170,7 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
 You can update a service's image and deploy a setup as follows:
 
 ```console
-$ cycleops services update 17 --variable container.image=nginx:1.23
+$ cycleops services update 17 --variable containers.0.image=nginx:1.23
 $ cycleops setups deploy 44
 ```
 
