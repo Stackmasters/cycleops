@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import typer
 from rich import print
@@ -177,9 +177,11 @@ def dict_from_variables(
 
     ["container.image=nginx:1.23", "container.ports=80:80"] -> {'container': {'image': 'nginx:1.23', 'ports': '80:80'}}
 
+    ["containers.0.image=nginx:1.23", "containers.0.ports.0=80:80", "containers.1.image=redis:latest"] -> {'containers': [{'image': 'nginx:1.23', 'ports': [80:80]}, {'image': 'redis:latest'}]}
+
     Implementation:
 
-        We use current_level_dict to keep track of the current nested dictionary (inside top_level_dict) that we are updating.
+        We use current_node to keep track of the current nested dictionary (inside top_level_dict) that we are updating.
         As such, we can update the top_level_dict with the correct nested keys and values without losing track of our current position in the nested structure.
 
         If we only used top_level_dict, we would break the reference to the initial object.
@@ -188,13 +190,47 @@ def dict_from_variables(
     for variable in variables:
         keys, value = validate_variable_format(variable)
         keys = keys.split(".")
-        current_level_dict = top_level_dict
+        keys = [int(x) if x.isdigit() else x for x in keys]
+        current_node = top_level_dict
 
-        for key in keys[:-1]:
-            if key not in current_level_dict:
-                current_level_dict[key] = {}
-            current_level_dict = current_level_dict[key]
+        for i, key in enumerate(keys[:-1]):
+            next_key = keys[i + 1]
 
-        current_level_dict[keys[-1]] = value
+            if type(key) is str:
+                if key not in current_node:
+                    current_node[key] = [] if type(next_key) is int else {}
+            elif should_create_new_node(key, current_node):
+                current_node.append({})
+
+            current_node = current_node[key]
+
+        last_key = keys[-1]
+        if should_create_new_node(last_key, current_node):
+            current_node.append(value)
+
+        current_node[last_key] = parse_if_bool(value)
 
     return top_level_dict
+
+
+def should_create_new_node(
+    key: Union[str, int], current_node: Union[Dict[str, Any], List[Any]]
+) -> bool:
+    """
+    Determines if a new node should be created.
+    """
+
+    if type(key) is int:
+        return key >= len(current_node)
+    else:
+        return False
+
+
+def parse_if_bool(value: str) -> Union[str, bool]:
+    """
+    Parses a string and returns a boolean value.
+    """
+
+    if value.lower() in ("true", "false"):
+        return value.lower() == "true"
+    return value
