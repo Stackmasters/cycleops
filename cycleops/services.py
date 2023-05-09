@@ -61,7 +61,7 @@ def create(
     variables: Optional[List[str]] = typer.Option(
         None,
         "--variable",
-        help="Variable key-value pairs (e.g. container.image=nginx:1.23).",
+        help="Variable key-value pairs (e.g. containers.0.image=nginx:1.23).",
     ),
 ) -> None:
     """
@@ -103,7 +103,7 @@ def update(
     variables: Optional[List[str]] = typer.Option(
         None,
         "--variable",
-        help="Variable key-value pairs (e.g. container.image=nginx:1.23).",
+        help="Variable key-value pairs (e.g. containers.0.image=nginx:1.23).",
     ),
 ) -> None:
     """
