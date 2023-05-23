@@ -80,6 +80,18 @@ cycleops services update <service_id> --name <service_name> --description <servi
 cycleops services delete <service_id>
 ```
 
+#### Create a Container
+
+```
+cycleops services create-container <service_id> <container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
+```
+
+#### Update a Container
+
+```
+cycleops services update-container <service_id> <container_name> --name <new_container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
+```
+
 ### Stacks
 
 #### List your stacks
@@ -160,7 +172,7 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
     env:
       CYCLEOPS_API_KEY: ${{ secrets.CYCLEOPS_API_KEY }}
     steps:
-        run: pipx install cycleops
+        run: pip install cycleops
         run: cycleops services update <service_id> --variable containers.0.image=<image_name>
         run: cycleops setups deploy <setup_id>
 ```

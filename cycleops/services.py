@@ -234,3 +234,196 @@ def parse_if_bool(value: str) -> Union[str, bool]:
     if value.lower() in ("true", "false"):
         return value.lower() == "true"
     return value
+
+
+@app.command()
+def create_container(
+    service_id: int = typer.Argument(..., help="The ID of the service."),
+    container_name: str = typer.Option(
+        ..., help="The name of the container to be created."
+    ),
+    image: Optional[str] = typer.Option(
+        None,
+        help="The image of the container in the following format: <image_name>:<image_tag>",
+    ),
+    ports: Optional[str] = typer.Option(
+        None,
+        help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
+    ),
+    volumes: Optional[List[str]] = typer.Option(
+        None,
+        help="The volumes of the container.",
+    ),
+    env_file: Optional[str] = typer.Option(
+        None,
+        help="A file that contains environment variables.",
+    ),
+    command: Optional[str] = typer.Option(
+        None,
+        help="A command that is run on container startup.",
+    ),
+) -> None:
+    """
+    Create a container in a service with the specified option values.
+    """
+
+    try:
+        service = service_client.retrieve(service_id)
+
+        if not service:
+            raise ValueError(f"Service {service_id} not found")
+
+        image_name = None
+        image_tag = None
+        if image:
+            if ":" not in image or image.count(":") != 1:
+                raise ValueError(
+                    "Please specify a valid image in the format: <image_name>:<image_tag>"
+                )
+
+            image_split = image.split(":")
+            image_name = image_split[0]
+            image_tag = image_split[1]
+
+        env_vars = []
+        if env_file:
+            with open(env_file, "r") as env_file_fd:
+                for line in env_file_fd:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        env_vars.append(line)
+
+        ports_list = []
+        if ports:
+            ports_list = [port.strip() for port in ports.split(",")]
+
+        volumes_list = []
+        if volumes:
+            volumes_list = [volume.strip() for volume in volumes.split(",")]
+
+        service["variables"]["containers"].append(
+            {
+                "name": container_name,
+                "image": image_name,
+                "tag": image_tag,
+                "ports": ports_list,
+                "volumes": volumes_list,
+                "command": command,
+                "env_vars": env_vars,
+            }
+        )
+
+        service_client.update(
+            service_id,
+            variables=service["variables"],
+        )
+
+        display_success_message(
+            f"Container {container_name} in Service {service_id} has been created"
+        )
+    except Exception as error:
+        display_error_message(error)
+        raise typer.Abort()
+
+
+@app.command()
+def update_container(
+    service_id: int = typer.Argument(..., help="The ID of the service."),
+    container_name: str = typer.Argument(
+        ..., help="The name of the container to be updated."
+    ),
+    name: Optional[str] = typer.Option(
+        None,
+        help="A new name for the container.",
+    ),
+    image: Optional[str] = typer.Option(
+        None,
+        help="The image of the container in the following format: <image_name>:<image_tag>",
+    ),
+    ports: Optional[str] = typer.Option(
+        None,
+        help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
+    ),
+    volumes: Optional[List[str]] = typer.Option(
+        None,
+        help="The volumes of the container.",
+    ),
+    env_file: Optional[str] = typer.Option(
+        None,
+        help="A file that contains environment variables.",
+    ),
+    command: Optional[str] = typer.Option(
+        None,
+        help="A command that is run on container startup.",
+    ),
+) -> None:
+    """
+    Updates a container in a service with the specified option values.
+    """
+
+    try:
+        service = service_client.retrieve(service_id)
+
+        if not service:
+            raise ValueError(f"Service {service_id} not found")
+
+        container_index = None
+        for index, container in enumerate(service["variables"]["containers"]):
+            if container["name"] == container_name:
+                container_index = index
+                break
+
+        if not container_index:
+            raise ValueError(f"Container {container_name} not found")
+
+        image_name = None
+        image_tag = None
+        if image:
+            if ":" not in image or image.count(":") != 1:
+                raise ValueError(
+                    "Please specify a valid image in the format: <image_name>:<image_tag>"
+                )
+
+            image_split = image.split(":")
+            image_name = image_split[0]
+            image_tag = image_split[1]
+
+        env_vars = []
+        if env_file:
+            with open(env_file, "r") as env_file_fd:
+                for line in env_file_fd:
+                    line = line.strip()
+                    if line and not line.startswith("#"):
+                        env_vars.append(line)
+
+        ports_list = []
+        if ports:
+            ports_list = [port.strip() for port in ports.split(",")]
+
+        volumes_list = []
+        if volumes:
+            volumes_list = [volume.strip() for volume in volumes.split(",")]
+
+        container_name = name if name else container_name
+
+        service["variables"]["containers"][container_index] = {
+            "name": container_name,
+            "image": image_name,
+            "tag": image_tag,
+            "ports": ports_list,
+            "volumes": volumes_list,
+            "command": command,
+            "env_vars": env_vars,
+        }
+
+        service_client.update(
+            service_id,
+            variables=service["variables"],
+        )
+
+        display_success_message(
+            f"Container {container_name} in Service {service_id} has been updated"
+        )
+    except Exception as error:
+        display_error_message(error)
+        raise typer.Abort()
