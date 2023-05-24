@@ -373,7 +373,7 @@ def update_container(
                 container_index = index
                 break
 
-        if not container_index:
+        if container_index is None:
             raise ValueError(f"Container {container_name} not found")
 
         image_name = None
