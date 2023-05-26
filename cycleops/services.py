@@ -301,7 +301,7 @@ def create_container(
         if volumes:
             volumes_list = [volume.strip() for volume in volumes.split(",")]
 
-        variables = {
+        service["variables"]["containers"].append({
             "name": container_name,
             "image": image_name,
             "tag": image_tag,
@@ -309,10 +309,7 @@ def create_container(
             "volumes": volumes_list,
             "command": command,
             "env_vars": env_vars,
-        }
-
-        clean_variables = {k: v for (k, v) in variables.items() if v}
-        service["variables"]["containers"].append(clean_variables)
+        })
 
         service_client.update(
             service_id,
@@ -417,8 +414,9 @@ def update_container(
             "env_vars": env_vars,
         }
 
-        clean_variables = {k: v for (k, v) in variables.items() if v}
-        service["variables"]["containers"][container_index] = clean_variables
+        for key, value in variables.items():
+            if value:
+                service["variables"]["containers"][container_index][key] = value
 
         service_client.update(
             service_id,
