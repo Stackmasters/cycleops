@@ -301,15 +301,17 @@ def create_container(
         if volumes:
             volumes_list = [volume.strip() for volume in volumes.split(",")]
 
-        service["variables"]["containers"].append({
-            "name": container_name,
-            "image": image_name,
-            "tag": image_tag,
-            "ports": ports_list,
-            "volumes": volumes_list,
-            "command": command,
-            "env_vars": env_vars,
-        })
+        service["variables"]["containers"].append(
+            {
+                "name": container_name,
+                "image": image_name,
+                "tag": image_tag,
+                "ports": ports_list,
+                "volumes": volumes_list,
+                "command": command,
+                "env_vars": env_vars,
+            }
+        )
 
         service_client.update(
             service_id,
