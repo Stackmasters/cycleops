@@ -250,7 +250,7 @@ def create_container(
         None,
         help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
     ),
-    volumes: Optional[List[str]] = typer.Option(
+    volumes: Optional[str] = typer.Option(
         None,
         help="The volumes of the container.",
     ),
@@ -344,7 +344,7 @@ def update_container(
         None,
         help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
     ),
-    volumes: Optional[List[str]] = typer.Option(
+    volumes: Optional[str] = typer.Option(
         None,
         help="The volumes of the container.",
     ),
@@ -406,7 +406,7 @@ def update_container(
 
         container_name = name if name else container_name
 
-        service["variables"]["containers"][container_index] = {
+        variables = {
             "name": container_name,
             "image": image_name,
             "tag": image_tag,
@@ -415,6 +415,10 @@ def update_container(
             "command": command,
             "env_vars": env_vars,
         }
+
+        for key, value in variables.items():
+            if value:
+                service["variables"]["containers"][container_index][key] = value
 
         service_client.update(
             service_id,
