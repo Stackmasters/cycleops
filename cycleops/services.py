@@ -250,7 +250,7 @@ def create_container(
         None,
         help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
     ),
-    volumes: Optional[List[str]] = typer.Option(
+    volumes: Optional[str] = typer.Option(
         None,
         help="The volumes of the container.",
     ),
@@ -301,17 +301,18 @@ def create_container(
         if volumes:
             volumes_list = [volume.strip() for volume in volumes.split(",")]
 
-        service["variables"]["containers"].append(
-            {
-                "name": container_name,
-                "image": image_name,
-                "tag": image_tag,
-                "ports": ports_list,
-                "volumes": volumes_list,
-                "command": command,
-                "env_vars": env_vars,
-            }
-        )
+        variables = {
+            "name": container_name,
+            "image": image_name,
+            "tag": image_tag,
+            "ports": ports_list,
+            "volumes": volumes_list,
+            "command": command,
+            "env_vars": env_vars,
+        }
+
+        clean_variables = {k: v for (k, v) in variables.items() if v}
+        service["variables"]["containers"].append(clean_variables)
 
         service_client.update(
             service_id,
@@ -344,7 +345,7 @@ def update_container(
         None,
         help="The ports of the container seperated by comma (e.g. 80:80,3000:3000).",
     ),
-    volumes: Optional[List[str]] = typer.Option(
+    volumes: Optional[str] = typer.Option(
         None,
         help="The volumes of the container.",
     ),
@@ -406,7 +407,7 @@ def update_container(
 
         container_name = name if name else container_name
 
-        service["variables"]["containers"][container_index] = {
+        variables = {
             "name": container_name,
             "image": image_name,
             "tag": image_tag,
@@ -415,6 +416,9 @@ def update_container(
             "command": command,
             "env_vars": env_vars,
         }
+
+        clean_variables = {k: v for (k, v) in variables.items() if v}
+        service["variables"]["containers"][container_index] = clean_variables
 
         service_client.update(
             service_id,
