@@ -308,8 +308,8 @@ def create_container(
                 "tag": image_tag,
                 "ports": ports_list,
                 "volumes": volumes_list,
-                "command": command,
                 "env_vars": env_vars,
+                "command": command,
             }
         )
 
@@ -412,8 +412,8 @@ def update_container(
             "tag": image_tag,
             "ports": ports_list,
             "volumes": volumes_list,
-            "command": command,
             "env_vars": env_vars,
+            "command": command,
         }
 
         for key, value in variables.items():
