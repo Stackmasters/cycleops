@@ -17,7 +17,7 @@ class Client:
 
     def __init__(
         self,
-        base_url: Optional[str] = "https://cloud.cycleops.io/manager",
+        base_url: Optional[str] = "https://cloud.cycleops.io/stack-manager",
         api_key: Optional[str] = None,
     ):
         self.base_url: str = sec.load("CYCLEOPS_BASE_URL", base_url)
@@ -101,6 +101,9 @@ class JobClient(SubClient):
         payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
 
         return self.client._request("POST", "jobs", payload)
+
+    def retrieve(self, job_id: int) -> Optional[Dict[str, Any]]:
+        return self.client._request("GET", f"jobs/{job_id}")
 
 
 class SetupClient(SubClient):

@@ -1,15 +1,17 @@
+import time
 from typing import List, Optional
 
 import typer
 from rich import print
 
-from .client import SetupClient, cycleops_client
+from .client import JobClient, SetupClient, cycleops_client
 from .exceptions import NotFound
 from .utils import display_error_message, display_success_message
 
 app = typer.Typer()
 
 setup_client: SetupClient = SetupClient(cycleops_client)
+job_client: JobClient = JobClient(cycleops_client)
 
 
 @app.command()
@@ -157,14 +159,39 @@ def delete(
 
 
 @app.command()
-def deploy(setup_id: int = typer.Argument(..., help="The ID of the setup.")) -> None:
+def deploy(
+    setup_id: int = typer.Argument(..., help="The ID of the setup."),
+    wait: Optional[bool] = typer.Option(
+        default=False, help="Wait for the deployment job to complete"
+    ),
+) -> None:
     """
     Deploy the setup with the specified setup_id.
     """
 
     try:
-        setup_client.deploy(setup_id)
-        display_success_message(f"Setup {setup_id} has been queued for deployment")
+        job = setup_client.deploy(setup_id)
+        report_queued = print if wait else display_success_message
+        report_queued(f"Setup {setup_id} has been queued for deployment")
+
+        while wait:
+            match status := job["status"]:
+                case "Initialized":
+                    print(f"Setup {setup_id} has been initialized")
+                case "Deploying":
+                    print(f"Setup {setup_id} is being deployed")
+                case "Deployed":
+                    display_success_message(
+                        f"Setup {setup_id} has been deployed successfully"
+                    )
+                    break
+                case "Failed":
+                    display_error_message(job)
+                    raise Exception(f"Setup {setup_id} could not be deployed")
+                case _:
+                    print(f"Setup {setup_id} is in status {status}")
+            time.sleep(3)
+            job = job_client.retrieve(job["id"])
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
