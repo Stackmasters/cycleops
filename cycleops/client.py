@@ -17,7 +17,7 @@ class Client:
 
     def __init__(
         self,
-        base_url: Optional[str] = "https://cloud.cycleops.io/manager",
+        base_url: Optional[str] = "https://cloud.cycleops.io/stack-manager",
         api_key: Optional[str] = None,
     ):
         self.base_url: str = sec.load("CYCLEOPS_BASE_URL", base_url)
