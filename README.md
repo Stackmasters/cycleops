@@ -172,8 +172,15 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
     env:
       CYCLEOPS_API_KEY: ${{ secrets.CYCLEOPS_API_KEY }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Cycleops
         run: pip install cycleops
-        run: cycleops services update <service_id> --variable containers.0.image=<image_name>
+      - name: Update Cycleops services
+        run: cycleops services update-container <service_id> <container_name> --image <image_name>:<image_tag>
+      - name: Deploy Cycleops setups
         run: cycleops setups deploy <setup_id>
 ```
 
