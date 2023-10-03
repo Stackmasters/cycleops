@@ -24,7 +24,11 @@ class Client:
         self.api_key: str = sec.load("CYCLEOPS_API_KEY", api_key)
 
     def _request(
-        self, method: str, endpoint: str, payload: Optional[Dict[str, Any]] = None
+        self,
+        method: str,
+        endpoint: str,
+        payload: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         url: str = f"{self.base_url}/{endpoint}"
         response: Response = requests.request(
@@ -32,6 +36,7 @@ class Client:
             url,
             json=payload,
             auth=CycleopsAuthentication(self.api_key),
+            params=params,
         )
         return self._handle_response(response)
 
@@ -75,8 +80,13 @@ class ServiceClient(SubClient):
     def list(self) -> Optional[Dict[str, Any]]:
         return self.client._request("GET", f"services")
 
-    def retrieve(self, service_id: int) -> Optional[Dict[str, Any]]:
-        return self.client._request("GET", f"services/{service_id}")
+    def retrieve(
+        self, service_id: Optional[int] = None, params: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        if service_id:
+            return self.client._request("GET", f"services/{service_id}")
+
+        return self.client._request("GET", f"services", params=params)
 
     def create(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
         payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
@@ -114,8 +124,13 @@ class SetupClient(SubClient):
     def list(self) -> Optional[Dict[str, Any]]:
         return self.client._request("GET", f"setups")
 
-    def retrieve(self, setup_id: int) -> Optional[Dict[str, Any]]:
-        return self.client._request("GET", f"setups/{setup_id}")
+    def retrieve(
+        self, setup_id: Optional[int] = None, params: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        if setup_id:
+            return self.client._request("GET", f"setups/{setup_id}")
+
+        return self.client._request("GET", f"setups", params=params)
 
     def create(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
         payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
@@ -155,8 +170,13 @@ class StackClient(SubClient):
     def list(self) -> Optional[Dict[str, Any]]:
         return self.client._request("GET", f"stacks")
 
-    def retrieve(self, stack_id: int) -> Optional[Dict[str, Any]]:
-        return self.client._request("GET", f"stacks/{stack_id}")
+    def retrieve(
+        self, stack_id: Optional[int] = None, params: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        if stack_id:
+            return self.client._request("GET", f"stacks/{stack_id}")
+
+        return self.client._request("GET", f"stacks", params=params)
 
     def create(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
         payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}

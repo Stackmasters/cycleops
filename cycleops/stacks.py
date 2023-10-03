@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 import typer
 from rich import print
@@ -33,17 +33,16 @@ def list() -> None:
 
 @app.command()
 def retrieve(
-    stack_id: int = typer.Argument(..., help="The ID of the stack."),
+    stack_identifier: str = typer.Argument(
+        ..., help="The ID or name of the stack. Names take precedence."
+    ),
 ) -> None:
     """
-    Retrieve the stack specified by the given ID.
+    Retrieve the stack specified by the given ID or name.
     """
 
     try:
-        stack = stack_client.retrieve(stack_id)
-
-        if not stack:
-            raise NotFound("No stack with such ID exists")
+        stack = get_stack(stack_identifier)
 
         print(stack)
     except Exception as error:
@@ -86,7 +85,9 @@ def create(
 
 @app.command()
 def update(
-    stack_id: int = typer.Argument(..., help="The ID of the stack."),
+    stack_identifier: str = typer.Argument(
+        ..., help="The ID or name of the stack. Names take precedence."
+    ),
     name: str = typer.Option(
         None,
         help="The name of the stack.",
@@ -106,14 +107,16 @@ def update(
     """
 
     try:
+        stack = get_stack(stack_identifier)
+
         stack_client.update(
-            stack_id,
+            stack["id"],
             name=name,
             description=description,
             units=units,
         )
 
-        display_success_message(f"Stack {stack_id} has been updated")
+        display_success_message(f"Stack {stack_identifier} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -121,15 +124,34 @@ def update(
 
 @app.command()
 def delete(
-    stack_id: int = typer.Argument(..., help="The ID of the stack."),
+    stack_identifier: str = typer.Argument(
+        ..., help="The ID or name of the stack. Names take precedence."
+    ),
 ) -> None:
     """
-    Delete the stack specified by the given ID.
+    Delete the stack specified by the given name.
     """
 
     try:
-        stack_client.delete(stack_id)
-        display_success_message(f"Stack {stack_id} has been deleted")
+        stack = get_stack(stack_identifier)
+
+        stack_client.delete(stack["id"])
+        display_success_message(f"Stack {stack_identifier} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
+
+
+def get_stack(stack_identifier: str) -> Optional[Dict[str, Any]]:
+    """
+    Retrieves a Stack with either a name or ID. Names take precedence.
+    """
+
+    stack = stack_client.retrieve(params={"name": stack_identifier})
+
+    if len(stack) == 1:
+        return stack[0]
+
+    stack = stack_client.retrieve(stack_id=stack_identifier)
+
+    return stack

@@ -59,7 +59,7 @@ cycleops services list
 #### Retrieve a service
 
 ```
-cycleops services retrieve <service_id>
+cycleops services retrieve <service_name>|<service_id>
 ```
 
 #### Create a service
@@ -71,25 +71,25 @@ cycleops services create --name <service_name> --unit-id <unit_id>
 #### Update a service
 
 ```
-cycleops services update <service_id> --name <service_name> --description <service_description --unit-id <unit_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ... --variable <key_n>=<value_n>
+cycleops services update <service_name>|<service_id> --name <service_name> --description <service_description --unit-id <unit_id> --variable <key_1>=<value_1> --variable <key_2>=<value_2> ... --variable <key_n>=<value_n>
 ```
 
 #### Delete a service
 
 ```
-cycleops services delete <service_id>
+cycleops services delete <service_name>|<service_id>
 ```
 
 #### Create a Container
 
 ```
-cycleops services create-container <service_id> <container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
+cycleops services create-container <service_name>|<service_id> <container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
 ```
 
 #### Update a Container
 
 ```
-cycleops services update-container <service_id> <container_name> --name <new_container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
+cycleops services update-container <service_name>|<service_id> <container_name> --name <new_container_name> --image <image_name>:<image_tag> --ports <ports>,<ports> --volumes <volume>,<volume>,<volume> --env-file <env_file_path> --command <command>
 ```
 
 ### Stacks
@@ -103,7 +103,7 @@ cycleops stacks list
 #### Retrieve a stack
 
 ```
-cycleops stacks retrieve <stack_id>
+cycleops stacks retrieve <stack_name>|<stack_id>
 ```
 
 #### Create a stack
@@ -115,13 +115,13 @@ cycleops stacks create --name <stack_name>
 #### Update a stack
 
 ```
-cycleops stacks update <stack_id> --name <stack_name> --description <stack_description> --unit-id <unit_id> ... --unit-id <unit_id>
+cycleops stacks update <stack_name>|<stack_id> --name <stack_name> --description <stack_description> --unit-id <unit_id> ... --unit-id <unit_id>
 ```
 
 #### Delete a stack
 
 ```
-cycleops stacks delete <stack_id>
+cycleops stacks delete <stack_name>|<stack_id>
 ```
 
 ### Setups
@@ -135,7 +135,7 @@ cycleops setups list
 #### Retrieve a setup
 
 ```
-cycleops setups retrieve <setup_id>
+cycleops setups retrieve <setup_name>|<setup_id>
 ```
 
 #### Create a setup
@@ -147,19 +147,19 @@ cycleops setups create --name <setup_name>
 #### Update a setup
 
 ```
-cycleops setups update <setup_id> --name <setup_name> --stack-id <stack_id> --environment-id <environment_id> --host-id <host_id> ... --host-id <host_id> --hostgroup-id <hostgroup_id> ... --hostgroup-id <hostgroup_id> --service-id <service_id> ... --service-id <service_id>
+cycleops setups update <setup_name>|<setup_id> --name <setup_name> --stack-id <stack_id> --environment-id <environment_id> --host-id <host_id> ... --host-id <host_id> --hostgroup-id <hostgroup_id> ... --hostgroup-id <hostgroup_id> --service-id <service_id> ... --service-id <service_id>
 ```
 
 #### Delete a setup
 
 ```
-cycleops setups delete <setup_id>
+cycleops setups delete <setup_name>|<setup_id>
 ```
 
 #### Deploy a setup
 
 ```
-cycleops setups deploy <setup_id>
+cycleops setups deploy <setup_name>|<setup_id>
 ```
 
 ### GitHub Actions
@@ -179,9 +179,9 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
       - name: Install Cycleops
         run: pip install cycleops
       - name: Update Cycleops services
-        run: cycleops services update-container <service_id> <container_name> --image <image_name>:<image_tag>
+        run: cycleops services update-container <service_name> <container_name> --image <image_name>:<image_tag>
       - name: Deploy Cycleops setups
-        run: cycleops setups deploy <setup_id>
+        run: cycleops setups deploy <setup_name>
 ```
 
 ## Example
@@ -189,8 +189,8 @@ You can use Cycleops with your GitHub Actions to deploy a setup right from GitHu
 You can update a service's image and deploy a setup as follows:
 
 ```console
-$ cycleops services update 17 --variable containers.0.image=nginx:1.23
-$ cycleops setups deploy 44
+$ cycleops services update default-container-ngnix --variable containers.0.image=nginx:1.23
+$ cycleops setups deploy default-container-ngnix
 ```
 
 ## License
