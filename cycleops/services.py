@@ -32,17 +32,16 @@ def list() -> None:
 
 @app.command()
 def retrieve(
-    service_id: int = typer.Argument(..., help="The ID of the service."),
+    service_identifier: str = typer.Argument(
+        ..., help="The ID or name of the service. Names take precedence."
+    ),
 ) -> None:
     """
     Retrieve the service specified by the given ID.
     """
 
     try:
-        service = service_client.retrieve(service_id)
-
-        if not service:
-            raise NotFound("No service with such ID exists")
+        service = get_service(service_identifier)
 
         print(service)
     except Exception as error:
@@ -87,7 +86,9 @@ def create(
 
 @app.command()
 def update(
-    service_id: int = typer.Argument(..., help="The ID of the service."),
+    service_identifier: str = typer.Argument(
+        ..., help="The ID or name of the service. Names take precedence."
+    ),
     name: Optional[str] = typer.Option(
         None,
         help="The name of the service.",
@@ -111,23 +112,20 @@ def update(
     """
 
     try:
-        service = service_client.retrieve(service_id)
-
-        if not service:
-            raise ValueError("Invalid resource: Service")
+        service = get_service(service_identifier)
 
         if variables:
             variables = dict_from_variables(variables, service["variables"])
 
         service_client.update(
-            service_id,
+            service["id"],
             name=name,
             description=description,
             unit=unit_id,
             variables=variables,
         )
 
-        display_success_message(f"Service {service_id} has been updated")
+        display_success_message(f"Service {service_identifier} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -135,15 +133,19 @@ def update(
 
 @app.command()
 def delete(
-    service_id: int = typer.Argument(..., help="The ID of the service."),
+    service_identifier: str = typer.Argument(
+        ..., help="The ID or name of the service. Names take precedence."
+    ),
 ) -> None:
     """
     Delete the service specified by the given ID.
     """
 
     try:
-        service_client.delete(service_id)
-        display_success_message(f"Service {service_id} has been deleted")
+        service = get_service(service_identifier)
+
+        service_client.delete(service["id"])
+        display_success_message(f"Service {service_identifier} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -238,7 +240,9 @@ def parse_if_bool(value: str) -> Union[str, bool]:
 
 @app.command()
 def create_container(
-    service_id: int = typer.Argument(..., help="The ID of the service."),
+    service_identifier: str = typer.Argument(
+        ..., help="The ID or name of the service. Names take precedence."
+    ),
     container_name: str = typer.Option(
         ..., help="The name of the container to be created."
     ),
@@ -268,10 +272,7 @@ def create_container(
     """
 
     try:
-        service = service_client.retrieve(service_id)
-
-        if not service:
-            raise ValueError(f"Service {service_id} not found")
+        service = get_service(service_identifier)
 
         image_name = None
         image_tag = None
@@ -314,12 +315,12 @@ def create_container(
         )
 
         service_client.update(
-            service_id,
+            service["id"],
             variables=service["variables"],
         )
 
         display_success_message(
-            f"Container {container_name} in Service {service_id} has been created"
+            f"Container {container_name} in Service {service_identifier} has been created"
         )
     except Exception as error:
         display_error_message(error)
@@ -328,7 +329,9 @@ def create_container(
 
 @app.command()
 def update_container(
-    service_id: int = typer.Argument(..., help="The ID of the service."),
+    service_identifier: str = typer.Argument(
+        ..., help="The ID or name of the service. Names take precedence."
+    ),
     container_name: str = typer.Argument(
         ..., help="The name of the container to be updated."
     ),
@@ -362,10 +365,7 @@ def update_container(
     """
 
     try:
-        service = service_client.retrieve(service_id)
-
-        if not service:
-            raise ValueError(f"Service {service_id} not found")
+        service = get_service(service_identifier)
 
         container_index = None
         for index, container in enumerate(service["variables"]["containers"]):
@@ -421,13 +421,28 @@ def update_container(
                 service["variables"]["containers"][container_index][key] = value
 
         service_client.update(
-            service_id,
+            service["id"],
             variables=service["variables"],
         )
 
         display_success_message(
-            f"Container {container_name} in Service {service_id} has been updated"
+            f"Container {container_name} in Service {service_identifier} has been updated"
         )
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
+
+
+def get_service(service_identifier: str) -> Optional[Dict[str, Any]]:
+    """
+    Retrieves a Service with either a name or ID. Names take precedence.
+    """
+
+    service = service_client.retrieve(params={"name": service_identifier})
+
+    if len(service) == 1:
+        return service[0]
+
+    service = service_client.retrieve(service_identifier)
+
+    return service

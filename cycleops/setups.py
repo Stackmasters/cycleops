@@ -1,5 +1,5 @@
 import time
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import typer
 from rich import print
@@ -34,17 +34,16 @@ def list() -> None:
 
 @app.command()
 def retrieve(
-    setup_id: int = typer.Argument(..., help="The ID of the setup."),
+    setup_identifier: str = typer.Argument(
+        ..., help="The ID or name of the setup. Names take precedence."
+    ),
 ) -> None:
     """
-    Retrieve the setup specified by the given ID.
+    Retrieve the setup specified by the given ID or name.
     """
 
     try:
-        setup = setup_client.retrieve(setup_id)
-
-        if not setup:
-            raise NotFound("No setup with such ID exists")
+        setup = get_setup(setup_identifier)
 
         print(setup)
     except Exception as error:
@@ -98,7 +97,9 @@ def create(
 
 @app.command()
 def update(
-    setup_id: int = typer.Argument(..., help="The ID of the setup."),
+    setup_identifier: str = typer.Argument(
+        ..., help="The ID or name of the setup. Names take precedence."
+    ),
     name: str = typer.Option(
         None,
         help="The name of the setup.",
@@ -126,8 +127,10 @@ def update(
     """
 
     try:
+        setup = get_setup(setup_identifier)
+
         setup_client.update(
-            setup_id=setup_id,
+            setup_id=setup["id"],
             name=name,
             stack=stack_id,
             environment=environment_id,
@@ -136,7 +139,7 @@ def update(
             services=services,
         )
 
-        display_success_message(f"Setup {setup_id} has been updated")
+        display_success_message(f"Setup {setup_identifier} has been updated")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -144,15 +147,19 @@ def update(
 
 @app.command()
 def delete(
-    setup_id: int = typer.Argument(..., help="The ID of the setup."),
+    setup_identifier: str = typer.Argument(
+        ..., help="The ID or name of the setup. Names take precedence."
+    ),
 ) -> None:
     """
-    Delete the setup specified by the given ID.
+    Delete the setup specified by the given ID or name.
     """
 
     try:
-        setup_client.delete(setup_id)
-        display_success_message(f"Setup {setup_id} has been deleted")
+        setup = get_setup(setup_identifier)
+
+        setup_client.delete(setup["id"])
+        display_success_message(f"Setup {setup_identifier} has been deleted")
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
@@ -160,38 +167,57 @@ def delete(
 
 @app.command()
 def deploy(
-    setup_id: int = typer.Argument(..., help="The ID of the setup."),
+    setup_identifier: str = typer.Argument(
+        ..., help="The ID or name of the setup. Names take precedence."
+    ),
     wait: Optional[bool] = typer.Option(
         default=False, help="Wait for the deployment job to complete"
     ),
 ) -> None:
     """
-    Deploy the setup with the specified setup_id.
+    Deploy the setup with the specified given ID or name.
     """
 
     try:
-        job = setup_client.deploy(setup_id)
+        setup = get_setup(setup_identifier)
+
+        job = setup_client.deploy(setup["id"])
         report_queued = print if wait else display_success_message
-        report_queued(f"Setup {setup_id} has been queued for deployment")
+        report_queued(f"Setup {setup['id']} has been queued for deployment")
 
         while wait:
             match status := job["status"]:
                 case "Initialized":
-                    print(f"Setup {setup_id} has been initialized")
+                    print(f"Setup {setup['id']} has been initialized")
                 case "Deploying":
-                    print(f"Setup {setup_id} is being deployed")
+                    print(f"Setup {setup['id']} is being deployed")
                 case "Deployed":
                     display_success_message(
-                        f"Setup {setup_id} has been deployed successfully"
+                        f"Setup {setup['id']} has been deployed successfully"
                     )
                     break
                 case "Failed":
                     display_error_message(job)
-                    raise Exception(f"Setup {setup_id} could not be deployed")
+                    raise Exception(f"Setup {setup['id']} could not be deployed")
                 case _:
-                    print(f"Setup {setup_id} is in status {status}")
+                    print(f"Setup {setup['id']} is in status {status}")
             time.sleep(3)
             job = job_client.retrieve(job["id"])
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
+
+
+def get_setup(setup_identifier: str) -> Optional[Dict[str, Any]]:
+    """
+    Retrieves a Setup with either a name or ID. Names take precedence.
+    """
+
+    setup = setup_client.retrieve(params={"name": setup_identifier})
+
+    if len(setup) == 1:
+        return setup[0]
+
+    setup = setup_client.retrieve(setup_identifier)
+
+    return setup
