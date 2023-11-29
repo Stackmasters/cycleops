@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cycleops"
-version = "0.3.0"
+version = "0.4.0"
 description = "The official command line interface for Cycleops"
 authors = ["George Margaritis <george@withlogic.co>"]
 license = "MIT"
@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.11"
 requests = "^2.28.2"
 sec = "^0.3.0"
-typer = {extras = ["all"], version = "^0.7.0"}
+typer = { extras = ["all"], version = "^0.7.0" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
