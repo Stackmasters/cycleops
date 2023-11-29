@@ -4,14 +4,25 @@ This is the official command line interface for the Cycleops API.
 
 ## Requirements
 
-* Python 3.11 or later
+To run the Cycleops CLI either Python 3.1 or newer, or Docker is required.
 
 ## Installation
 
-The Cycleops CLI is available on PyPI and you can install it through your favorite package manager:
+### Python
+
+The Cycleops CLI is available as a Python package on PyPI:
 
 ```console
 pip install cycleops
+CYCLEOPS_API_KEY=your-api-key cycleops --help
+```
+
+### Docker
+
+If your system is running Docker, you can also use Cycleops directly its Docker image:
+
+```console
+docker run -e CYCLEOPS_API_KEY=your-api-key ghcr.io/stackmasters/cycleops --help
 ```
 
 ## Usage
@@ -196,4 +207,3 @@ $ cycleops setups deploy default-container-ngnix
 ## License
 
 This project is licensed under the [`MIT License`](LICENSE)
-
