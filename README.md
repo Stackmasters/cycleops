@@ -4,7 +4,7 @@ This is the official command line interface for the Cycleops API.
 
 ## Requirements
 
-To run the Cycleops CLI either Python 3.1 or newer, or Docker is required.
+To run the Cycleops CLI either Python 3.11 or newer, or Docker is required.
 
 ## Installation
 
@@ -29,9 +29,7 @@ docker run -e CYCLEOPS_API_KEY=your-api-key ghcr.io/stackmasters/cycleops --help
 
 ### Authentication
 
-To authenticate with the Cycleops CLI, you need to provide an API key.
-
-You can find your API keys in the Cycleops UI, under the `Team` category. Alternatively you can create a new API key by visiting `Team > Users > Add New > API key`.
+To authenticate with the Cycleops CLI, you need to provide an API key. Documentation on how to create an API key is available at https://cycleops.io/docs/api-keys/create-a-new-api-key.
 
 #### Environment variable
 
