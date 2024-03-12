@@ -11,6 +11,12 @@ app = typer.Typer()
 
 host_client: HostClient = HostClient(cycleops_client)
 
+REGISTRATION_STATUS_CHOICES = {
+    11: "Registering",
+    6: "Registered",
+    5: "Unregistered",
+}
+
 
 @app.command()
 def list() -> None:
@@ -23,6 +29,11 @@ def list() -> None:
 
         if not hosts:
             raise NotFound("No hosts available")
+
+        for host in hosts:
+            host["register_status"] = REGISTRATION_STATUS_CHOICES.get(
+                host["register_status"]
+            )
 
         print(hosts)
     except Exception as error:

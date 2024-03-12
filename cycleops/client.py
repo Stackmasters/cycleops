@@ -31,12 +31,14 @@ class Client:
         params: Optional[Dict[str, Any]] = None,
     ) -> Optional[Dict[str, Any]]:
         url: str = f"{self.base_url}/{endpoint}"
+        headers: Dict[str] = {"Accept": "application/json; version=v2"}
         response: Response = requests.request(
             method,
             url,
             json=payload,
             auth=CycleopsAuthentication(self.api_key),
             params=params,
+            headers=headers,
         )
         return self._handle_response(response)
 
