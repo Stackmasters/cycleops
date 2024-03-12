@@ -3,6 +3,9 @@ from typing import Optional
 import typer
 
 from .client import cycleops_client
+from .environments import app as environments_app
+from .hostgroups import app as hostgroups_app
+from .hosts import app as hosts_app
 from .services import app as services_app
 from .setups import app as setups_app
 from .stacks import app as stacks_app
@@ -14,6 +17,11 @@ cycleops.add_typer(services_app, name="services", help="Manage your services.")
 cycleops.add_typer(stacks_app, name="stacks", help="Manage your stacks.")
 cycleops.add_typer(setups_app, name="setups", help="Manage your setups.")
 cycleops.add_typer(units_app, name="units", help="List all of the available units.")
+cycleops.add_typer(
+    environments_app, name="environments", help="Manage your environments."
+)
+cycleops.add_typer(hosts_app, name="hosts", help="Manage your hosts.")
+cycleops.add_typer(hostgroups_app, name="hostgroups", help="Manage your hostgroups.")
 
 
 @cycleops.callback()

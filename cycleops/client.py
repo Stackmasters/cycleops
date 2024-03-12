@@ -192,4 +192,75 @@ class StackClient(SubClient):
         return self.client._request("DELETE", f"stacks/{stack_id}")
 
 
+class EnvironmentClient(SubClient):
+    """
+    Client for managing Cycleops environments.
+    """
+
+    def list(self) -> Optional[Dict[str, Any]]:
+        return self.client._request("GET", f"environments")
+
+
+class HostClient(SubClient):
+    """
+    Client for managing Cycleops hosts.
+    """
+
+    def list(self) -> Optional[Dict[str, Any]]:
+        return self.client._request("GET", f"hosts")
+
+    def retrieve(
+        self, host_id: Optional[int] = None, params: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+        if host_id:
+            return self.client._request("GET", f"hosts/{host_id}")
+
+        return self.client._request("GET", f"hosts", params=params)
+
+    def create(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
+        payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
+
+        return self.client._request("POST", "hosts", payload)
+
+    def update(self, host_id: int, **kwargs: Any) -> Optional[Dict[str, Any]]:
+        payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
+
+        return self.client._request("PATCH", f"hosts/{host_id}", payload)
+
+    def delete(self, host_id: int) -> Optional[Dict[str, Any]]:
+        return self.client._request("DELETE", f"hosts/{host_id}")
+
+
+class HostgroupClient(SubClient):
+    """
+    Client for managing Cycleops hostgroups.
+    """
+
+    def list(self) -> Optional[Dict[str, Any]]:
+        return self.client._request("GET", f"hostgroups")
+
+    def retrieve(
+        self,
+        hostgroup_id: Optional[int] = None,
+        params: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Dict[str, Any]]:
+        if hostgroup_id:
+            return self.client._request("GET", f"hostgroups/{hostgroup_id}")
+
+        return self.client._request("GET", f"hostgroups", params=params)
+
+    def create(self, **kwargs: Any) -> Optional[Dict[str, Any]]:
+        payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
+
+        return self.client._request("POST", "hostgroups", payload)
+
+    def update(self, hostgroup_id: int, **kwargs: Any) -> Optional[Dict[str, Any]]:
+        payload: Dict[str, Any] = {k: v for (k, v) in kwargs.items() if v}
+
+        return self.client._request("PATCH", f"hostgroups/{hostgroup_id}", payload)
+
+    def delete(self, hostgroup_id: int) -> Optional[Dict[str, Any]]:
+        return self.client._request("DELETE", f"hostgroups/{hostgroup_id}")
+
+
 cycleops_client: Client = Client()
