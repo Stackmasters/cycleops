@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cycleops"
-version = "0.6.1"
+version = "0.6.2"
 description = "The official command line interface for Cycleops"
 authors = ["George Margaritis <george@withlogic.co>"]
 license = "MIT"
