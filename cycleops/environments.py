@@ -23,14 +23,20 @@ def list() -> None:
         if not environments:
             raise NotFound("No environments available")
 
-        table = Table(show_header=True, leading=True)
-        table.add_column("ID", width=5)
-        table.add_column("Name", width=30)
-
+        environments_result = []
         for environment in environments:
-            table.add_row(str(environment["id"]), environment["name"])
+            environment_result = {
+                "id": environment["id"],
+                "hosts": environment["hosts"],
+                "hostgroups": environment["hostgroups"],
+                "account": environment["account"],
+                "name": environment["name"],
+                "description": environment["description"],
+            }
 
-        print(table)
+            environments_result.append(environment_result)
+
+        print(environments_result)
     except Exception as error:
         display_error_message(error)
         raise typer.Exit(code=1)

@@ -57,6 +57,48 @@ cycleops --api-key=<cycleops_api_key> services update <service_id> --variable <k
 cycleops units list
 ```
 
+### Environments
+
+#### List your environments
+
+```
+cycleops environments list
+```
+
+
+### Hosts
+
+#### List your hosts
+
+```
+cycleops hosts list
+```
+
+#### Retrieve a host
+
+```
+cycleops hosts retrieve <host_name>|<host_id>
+```
+
+#### Create a host
+
+```
+cycleops hosts create --name <host_name> --ip <host_ip> --environment-id <environment_id> --jump-host true|false --hostgroup-id <hostgroup_id> ... --hostgroup-id <hostgroup_id>
+```
+
+#### Update a host
+
+```
+cycleops hosts update <host_name>|<host_id> --name <host_name> --ip <host_ip> --environment-id <environment_id> --jump-host true|false --hostgroup-id <hostgroup_id> ... --hostgroup-id <hostgroup_id>
+```
+
+#### Delete a host
+
+```
+cycleops hosts delete <host_name>|<host_id>
+```
+
+
 ### Services
 
 #### List your services
@@ -168,8 +210,10 @@ cycleops setups delete <setup_name>|<setup_id>
 #### Deploy a setup
 
 ```
-cycleops setups deploy <setup_name>|<setup_id>
+cycleops setups deploy <setup_name>|<setup_id> --wait
 ```
+
+Using `--wait` you can wait for the deployment job to complete.
 
 ### GitHub Actions
 
