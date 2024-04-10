@@ -3,7 +3,9 @@ from typing import Any, Dict, Optional
 import requests
 import sec
 import typer
+import websockets
 from requests.models import Response
+from websockets.legacy.client import WebSocketClientProtocol
 
 from .auth import CycleopsAuthentication
 from .exceptions import APIError, AuthenticationError
@@ -151,7 +153,7 @@ class SetupClient(SubClient):
         description: str = f"Deploying setup: {setup_id}"
         type: str = "Deployment"
 
-        jobs_client = JobClient(cycleops_client)
+        jobs_client: JobClient = JobClient(cycleops_client)
         return jobs_client.create(description=description, type=type, setup=setup_id)
 
 
@@ -266,3 +268,50 @@ class HostgroupClient(SubClient):
 
 
 cycleops_client: Client = Client()
+
+
+class WebSocketClient:
+    """
+    A client for interacting with Cycleops websockets to request and listen for job logs.
+    """
+
+    def __init__(self, job_id: str):
+        self.url: str = "ws://localhost:8003/ws/ansible-output"
+        self.job_id: str = job_id
+        self._jwt: Optional[str] = None
+        self._job: Optional[Dict[str, Any]] = None
+
+    @property
+    def jwt(self):
+        if not self._jwt:
+            self._jwt = self.authenticate()
+        return self._jwt
+
+    @property
+    def job(self):
+        if not self._job:
+            self._job = self.get_job()
+        return self._job
+
+    def authenticate(self) -> Optional[str]:
+        token: str = cycleops_client._request("POST", f"identity/token")
+        return token["access_token"]
+
+    def get_job(self) -> Optional[Dict[str, Any]]:
+        job_client: JobClient = JobClient(cycleops_client)
+        job: Optional[Dict[str, Any]] = job_client.retrieve(self.job_id)
+
+        return job
+
+    async def get_job_logs(self, websocket: WebSocketClientProtocol) -> None:
+        message: str = f"id={self.job_id}|jwt={self.jwt}|account={self.job['account']}"
+        await websocket.send(message)
+
+    async def listen(self, websocket: WebSocketClientProtocol) -> None:
+        while message := await websocket.recv():
+            print(f"{message}\n")
+
+    async def run(self) -> None:
+        async with websockets.connect(self.url) as websocket:
+            await self.get_job_logs(websocket)
+            await self.listen(websocket)

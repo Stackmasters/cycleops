@@ -1,10 +1,12 @@
+import asyncio
 import time
 from typing import Any, Dict, List, Optional
 
 import typer
+import websockets
 from rich import print
 
-from .client import JobClient, SetupClient, cycleops_client
+from .client import JobClient, SetupClient, WebSocketClient, cycleops_client
 from .exceptions import NotFound
 from .utils import display_error_message, display_success_message
 
@@ -180,32 +182,36 @@ def deploy(
 
     try:
         setup = get_setup(setup_identifier)
-
         job = setup_client.deploy(setup["id"])
-        report_queued = print if wait else display_success_message
-        report_queued(f"Setup {setup['id']} has been queued for deployment")
-
-        while wait:
-            match status := job["status"]:
-                case "Initialized":
-                    print(f"Setup {setup['id']} has been initialized")
-                case "Deploying":
-                    print(f"Setup {setup['id']} is being deployed")
-                case "Deployed":
-                    display_success_message(
-                        f"Setup {setup['id']} has been deployed successfully"
-                    )
-                    break
-                case "Failed":
-                    display_error_message(job)
-                    raise Exception(f"Setup {setup['id']} could not be deployed")
-                case _:
-                    print(f"Setup {setup['id']} is in status {status}")
-            time.sleep(3)
-            job = job_client.retrieve(job["id"])
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
+
+    deployment_scheduled_message = (
+        f"Setup {setup_identifier} has been queued for deployment"
+    )
+
+    if not wait:
+        display_success_message(deployment_scheduled_message)
+        return
+
+    print(f"{deployment_scheduled_message}\n")
+
+    try:
+        display_job_logs(job["id"])
+    except websockets.exceptions.ConnectionClosed:
+        job = job_client.retrieve(job["id"])
+
+        match job["status"]:
+            case "Deployed":
+                display_success_message(
+                    f"Setup {setup_identifier} has been deployed successfully"
+                )
+            case "Failed":
+                display_error_message(f"Setup {setup_identifier} could not be deployed")
+            case _:
+                print(f"Setup {setup_identifier} is in status {job['status']}")
+        return
 
 
 def get_setup(setup_identifier: str) -> Optional[Dict[str, Any]]:
@@ -221,3 +227,13 @@ def get_setup(setup_identifier: str) -> Optional[Dict[str, Any]]:
     setup = setup_client.retrieve(setup_identifier)
 
     return setup
+
+
+def display_job_logs(job_id: str) -> None:
+    """
+    Displays the deployements logs of the specified job
+    """
+
+    websocket_client = WebSocketClient(job_id)
+
+    asyncio.get_event_loop().run_until_complete(websocket_client.run())
