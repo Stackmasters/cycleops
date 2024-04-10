@@ -276,7 +276,7 @@ class WebSocketClient:
     """
 
     def __init__(self, job_id: str):
-        self.url: str = "ws://localhost:8003/ws/ansible-output"
+        self.url: str = "wss://cloud.cycleops.io/ansible-worker-ws/ws/ansible-output"
         self.job_id: str = job_id
         self._jwt: Optional[str] = None
         self._job: Optional[Dict[str, Any]] = None
