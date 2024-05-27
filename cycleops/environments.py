@@ -1,6 +1,5 @@
 import typer
 from rich import print
-from rich.table import Table
 
 from .client import EnvironmentClient, cycleops_client
 from .exceptions import NotFound
