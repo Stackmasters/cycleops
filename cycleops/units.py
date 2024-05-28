@@ -1,6 +1,5 @@
 import typer
 from rich import print
-from rich.table import Table
 
 from .client import UnitClient, cycleops_client
 from .exceptions import NotFound
@@ -18,20 +17,23 @@ def list() -> None:
     """
 
     try:
-        if all:
-            units = unit_client.list()
+        raw_units = unit_client.list()
 
-            if not units:
-                raise NotFound("No units available")
+        if not raw_units:
+            raise NotFound("No units available")
 
-            table = Table(show_header=True, leading=True)
-            table.add_column("ID", width=5)
-            table.add_column("Name", width=30)
+        units = [
+            {
+                "id": raw_unit.get("id"),
+                "name": raw_unit.get("name"),
+                "type_slug": raw_unit.get("type_slug"),
+                "service_groups_slugs": raw_unit.get("service_groups_slugs"),
+            }
+            for raw_unit in raw_units
+            if raw_unit.get("type_slug") != "system"
+        ]
 
-            for unit in units:
-                table.add_row(str(unit["id"]), unit["name"])
-
-            print(table)
+        print(units)
     except Exception as error:
         display_error_message(error)
         raise typer.Exit(code=1)
