@@ -154,6 +154,13 @@ class SetupClient(SubClient):
         jobs_client = JobClient(cycleops_client)
         return jobs_client.create(description=description, type=type, setup=setup_id)
 
+    def destroy(self, setup_id: int) -> Optional[Dict[str, Any]]:
+        description: str = f"Destroying setup: {setup_id}"
+        type: str = "Destruction"
+
+        jobs_client = JobClient(cycleops_client)
+        return jobs_client.create(description=description, type=type, setup=setup_id)
+
 
 class UnitClient(SubClient):
     """
