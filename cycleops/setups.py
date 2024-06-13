@@ -214,6 +214,26 @@ def deploy(
         return
 
 
+@app.command()
+def destroy(
+    setup_identifier: str = typer.Argument(
+        ..., help="The ID or name of the setup. Names take precedence."
+    ),
+) -> None:
+    """
+    Deploy the setup with the specified given ID or name.
+    """
+
+    try:
+        setup = get_setup(setup_identifier)
+        setup_client.destroy(setup["id"])
+
+        display_success_message(f"Setup {setup['id']} has been queued for destruction")
+    except Exception as error:
+        display_error_message(error)
+        raise typer.Abort()
+
+
 def get_setup(setup_identifier: str) -> Optional[Dict[str, Any]]:
     """
     Retrieves a Setup with either a name or ID. Names take precedence.
