@@ -221,7 +221,7 @@ def destroy(
     ),
 ) -> None:
     """
-    Deploy the setup with the specified given ID or name.
+    Destroy the setup with the specified given ID or name.
     """
 
     try:
