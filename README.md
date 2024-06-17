@@ -213,7 +213,17 @@ cycleops setups delete <setup_name>|<setup_id>
 cycleops setups deploy <setup_name>|<setup_id> --wait
 ```
 
-Using `--wait` you can wait for the deployment job to complete.
+Use `--wait` to wait for the deployment job to complete and display deployment logs.
+
+#### Destroy a setup
+
+```
+cycleops setups destroy <setup_name>|<setup_id>
+```
+
+Terminates all running containers associated with the specified setup.
+
+**Note:** Use `delete` to only remove the setup from Cycleops without terminating any running containers.
 
 ### GitHub Actions
 
