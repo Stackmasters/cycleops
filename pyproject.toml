@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "cycleops"
-version = "0.7.2"
+version = "0.8.0"
 description = "The official command line interface for Cycleops"
-authors = ["George Margaritis <george@withlogic.co>"]
+authors = ["Thanasis Parathyras <aparathyras@stackmasters.eu>", "George Margaritis <george@withlogic.co>", "Paris Kasidiaris <paris@withlogic.co>"]
 license = "MIT"
 readme = "README.md"
 
