@@ -252,7 +252,7 @@ def destroy(
         job = job_client.retrieve(job["id"])
 
         match job["status"]:
-            case "Destroyed":
+            case "Initialized":
                 display_success_message(
                     f"Setup {setup_identifier} has been destroyed successfully"
                 )
