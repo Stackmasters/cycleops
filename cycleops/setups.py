@@ -219,6 +219,9 @@ def destroy(
     setup_identifier: str = typer.Argument(
         ..., help="The ID or name of the setup. Names take precedence."
     ),
+    wait: Optional[bool] = typer.Option(
+        default=False, help="Wait for the destroy job to complete"
+    ),
 ) -> None:
     """
     Destroy the setup with the specified given ID or name.
@@ -232,6 +235,34 @@ def destroy(
     except Exception as error:
         display_error_message(error)
         raise typer.Abort()
+
+    destruction_scheduled_message = (
+        f"Setup {setup_identifier} has been queued for destruction"
+    )
+
+    if not wait:
+        display_success_message(destruction_scheduled_message)
+        return
+
+    print(f"{destruction_scheduled_message}\n")
+
+    try:
+        display_job_logs(job["id"])
+    except websockets.exceptions.ConnectionClosed:
+        job = job_client.retrieve(job["id"])
+
+        match job["status"]:
+            case "Destroyed":
+                display_success_message(
+                    f"Setup {setup_identifier} has been destroyed successfully"
+                )
+            case "Failed":
+                display_error_message(
+                    f"Setup {setup_identifier} could not be destroyed"
+                )
+            case _:
+                print(f"Setup {setup_identifier} is in status {job['status']}")
+        return
 
 
 def get_setup(setup_identifier: str) -> Optional[Dict[str, Any]]:
