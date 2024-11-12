@@ -229,7 +229,7 @@ def destroy(
 
     try:
         setup = get_setup(setup_identifier)
-        setup_client.destroy(setup["id"])
+        job = setup_client.destroy(setup["id"])
 
         display_success_message(f"Setup {setup['id']} has been queued for destruction")
     except Exception as error:
